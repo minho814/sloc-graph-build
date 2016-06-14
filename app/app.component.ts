@@ -4,57 +4,29 @@ import {NgFor} from '@angular/common';
 
 import {CHART_DIRECTIVES} from 'ng2-charts/ng2-charts';
 
-//let linechart = require('html/linechart');
+let linechart = require('templates/linechart');
 
 @Component({
   selector: 'my-app',
-  template: `
-	<div class="row">
-	  <div class="col-md-6">
-	    <base-chart class="chart" 
-	                [datasets]="lineChartData"
-	                [labels]="lineChartLabels"
-	                [options]="lineChartOptions"
-	                [colors]="lineChartColours"
-	                [legend]="lineChartLegend"
-	                [chartType]="lineChartType"
-	                (chartHover)="chartHovered($event)"
-	                (chartClick)="chartClicked($event)"></base-chart>
-	  </div>
-	  <div class="col-md-6" style="margin-bottom: 10px;">
-	    <table class="table table-responsive table-condensed">
-	      <tr>
-	        <th *ngFor="let label of lineChartLabels">{{label}}</th>
-	      </tr>
-	      <tr *ngFor="let d of lineChartData">
-	        <td *ngFor="let label of lineChartLabels; let j=index">{{d && d.data[j]}}</td>
-	      </tr>
-	    </table>
-	    <button (click)="randomize()">CLICK</button>
-	  </div>
-	</div>
-  `,
-  styles: [`
-	.chart {display: block; width: 100%; border: 1px solid black;}
-  `],
+  template: linechart,
   directives: [CHART_DIRECTIVES, NgClass, CORE_DIRECTIVES, FORM_DIRECTIVES, NgFor]
 })
 
 export class AppComponent {
   // lineChart
   public lineChartData:Array<any> = [
-    {data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A'},
-    {data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B'},
-    {data: [18, 48, 77, 9, 100, 27, 40], label: 'Series C'}
+    {data: [65, 59, 80, 81, 56, 55, 40], label: 'Java'},
+    {data: [28, 48, 40, 19, 86, 27, 90], label: 'Javascript'},
+    {data: [18, 48, 77, 9, 100, 27, 40], label: 'HTML'}
   ];
-  public lineChartLabels:Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  public lineChartLabels:Array<any> = ['v0.1', 'v0.2', 'v1.0', 'v1.1', 'v1.1.5', 'v1.2', 'v2.0'];
   public lineChartOptions:any = {
     animation: false,
     responsive: true
   };
   public lineChartColours:Array<any> = [
     { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
+      backgroundColor: 'rgba(148,159,177,0.1)',
       borderColor: 'rgba(148,159,177,1)',
       pointBackgroundColor: 'rgba(148,159,177,1)',
       pointBorderColor: '#fff',
@@ -62,7 +34,7 @@ export class AppComponent {
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
     },
     { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
+      backgroundColor: 'rgba(77,83,96,0.1)',
       borderColor: 'rgba(77,83,96,1)',
       pointBackgroundColor: 'rgba(77,83,96,1)',
       pointBorderColor: '#fff',
@@ -70,7 +42,7 @@ export class AppComponent {
       pointHoverBorderColor: 'rgba(77,83,96,1)'
     },
     { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
+      backgroundColor: 'rgba(148,159,177,0.1)',
       borderColor: 'rgba(148,159,177,1)',
       pointBackgroundColor: 'rgba(148,159,177,1)',
       pointBorderColor: '#fff',
@@ -86,53 +58,39 @@ export class AppComponent {
     for (let i = 0; i < this.lineChartData.length; i++) {
       _lineChartData[i] = {data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label};
       for (let j = 0; j < this.lineChartData[i].data.length; j++) {
-        _lineChartData[i].data[j] = Math.floor((Math.random() * 100) + 1);
+        _lineChartData[i].data[j] = this.getRandomInt(1, 100);
       }
     }
+    for (let i = 0; i < this.lineChartColours.length; i++) {
+      this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
+    }
+
     this.lineChartData = _lineChartData;
   }
 
-  /*public updateCommits():void {
-    
-    var child;
-    /// <reference path="browser/ambient/node/index.d.ts" />
-    var exec = require('child_process').exec;
+  // ng2-charts functions
+  public rgba(colour, alpha) {
+    return 'rgba(' + colour.concat(alpha).join(',') + ')';
+  }
 
-    exec("git log --pretty=format:\"%H\"", function(error, stdout, stderr) {
-      console.log("stdout: \n" + stdout);
+  public getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 
-      if (error) {
-        console.log('exec error: ' + error);
-      }
+  public getRandomColor() {
+    return [this.getRandomInt(0, 255), this.getRandomInt(0, 255), this.getRandomInt(0, 255)];
+  }
 
-      var commitList = stdout.split("\n");
-      var result = "";
-
-      async.eachSeries(commitList, function(commit, callback) {
-
-        child = exec("git checkout " + commit, function(err, stdo, stde) {
-          child = exec("cloc $(git ls-files)", function(error, stdout, stderr) {
-
-            if (error) {
-              console.log('exec error: ' + error);
-            }
-
-            result = result + stdout;
-            callback();
-          });
-        });
-      },
-      function(err) {
-        exec("git checkout master");
-        if (error) {
-          console.log("Error");
-        }
-        else {
-          console.log(result);
-        }
-      });
-    });
-  }*/
+  public formatLineColor(colors) {
+    return {
+      backgroundColor: this.rgba(colors, 0.1),
+      borderColor: this.rgba(colors, 1),
+      pointBackgroundColor: this.rgba(colors, 1),
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: this.rgba(colors, 0.8)
+    };
+  }
 
   // events
   public chartClicked(e:any):void {

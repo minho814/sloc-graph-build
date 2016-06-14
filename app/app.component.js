@@ -12,23 +12,23 @@ var core_1 = require('@angular/core');
 var common_1 = require('@angular/common');
 var common_2 = require('@angular/common');
 var ng2_charts_1 = require('ng2-charts/ng2-charts');
-//let linechart = require('html/linechart');
+var linechart = require('templates/linechart');
 var AppComponent = (function () {
     function AppComponent() {
         // lineChart
         this.lineChartData = [
-            { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-            { data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B' },
-            { data: [18, 48, 77, 9, 100, 27, 40], label: 'Series C' }
+            { data: [65, 59, 80, 81, 56, 55, 40], label: 'Java' },
+            { data: [28, 48, 40, 19, 86, 27, 90], label: 'Javascript' },
+            { data: [18, 48, 77, 9, 100, 27, 40], label: 'HTML' }
         ];
-        this.lineChartLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+        this.lineChartLabels = ['v0.1', 'v0.2', 'v1.0', 'v1.1', 'v1.1.5', 'v1.2', 'v2.0'];
         this.lineChartOptions = {
             animation: false,
             responsive: true
         };
         this.lineChartColours = [
             {
-                backgroundColor: 'rgba(148,159,177,0.2)',
+                backgroundColor: 'rgba(148,159,177,0.1)',
                 borderColor: 'rgba(148,159,177,1)',
                 pointBackgroundColor: 'rgba(148,159,177,1)',
                 pointBorderColor: '#fff',
@@ -36,7 +36,7 @@ var AppComponent = (function () {
                 pointHoverBorderColor: 'rgba(148,159,177,0.8)'
             },
             {
-                backgroundColor: 'rgba(77,83,96,0.2)',
+                backgroundColor: 'rgba(77,83,96,0.1)',
                 borderColor: 'rgba(77,83,96,1)',
                 pointBackgroundColor: 'rgba(77,83,96,1)',
                 pointBorderColor: '#fff',
@@ -44,7 +44,7 @@ var AppComponent = (function () {
                 pointHoverBorderColor: 'rgba(77,83,96,1)'
             },
             {
-                backgroundColor: 'rgba(148,159,177,0.2)',
+                backgroundColor: 'rgba(148,159,177,0.1)',
                 borderColor: 'rgba(148,159,177,1)',
                 pointBackgroundColor: 'rgba(148,159,177,1)',
                 pointBorderColor: '#fff',
@@ -60,52 +60,34 @@ var AppComponent = (function () {
         for (var i = 0; i < this.lineChartData.length; i++) {
             _lineChartData[i] = { data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label };
             for (var j = 0; j < this.lineChartData[i].data.length; j++) {
-                _lineChartData[i].data[j] = Math.floor((Math.random() * 100) + 1);
+                _lineChartData[i].data[j] = this.getRandomInt(1, 100);
             }
+        }
+        for (var i = 0; i < this.lineChartColours.length; i++) {
+            this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
         }
         this.lineChartData = _lineChartData;
     };
-    /*public updateCommits():void {
-      
-      var child;
-      /// <reference path="browser/ambient/node/index.d.ts" />
-      var exec = require('child_process').exec;
-  
-      exec("git log --pretty=format:\"%H\"", function(error, stdout, stderr) {
-        console.log("stdout: \n" + stdout);
-  
-        if (error) {
-          console.log('exec error: ' + error);
-        }
-  
-        var commitList = stdout.split("\n");
-        var result = "";
-  
-        async.eachSeries(commitList, function(commit, callback) {
-  
-          child = exec("git checkout " + commit, function(err, stdo, stde) {
-            child = exec("cloc $(git ls-files)", function(error, stdout, stderr) {
-  
-              if (error) {
-                console.log('exec error: ' + error);
-              }
-  
-              result = result + stdout;
-              callback();
-            });
-          });
-        },
-        function(err) {
-          exec("git checkout master");
-          if (error) {
-            console.log("Error");
-          }
-          else {
-            console.log(result);
-          }
-        });
-      });
-    }*/
+    // ng2-charts functions
+    AppComponent.prototype.rgba = function (colour, alpha) {
+        return 'rgba(' + colour.concat(alpha).join(',') + ')';
+    };
+    AppComponent.prototype.getRandomInt = function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+    AppComponent.prototype.getRandomColor = function () {
+        return [this.getRandomInt(0, 255), this.getRandomInt(0, 255), this.getRandomInt(0, 255)];
+    };
+    AppComponent.prototype.formatLineColor = function (colors) {
+        return {
+            backgroundColor: this.rgba(colors, 0.1),
+            borderColor: this.rgba(colors, 1),
+            pointBackgroundColor: this.rgba(colors, 1),
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: this.rgba(colors, 0.8)
+        };
+    };
     // events
     AppComponent.prototype.chartClicked = function (e) {
         console.log(e);
@@ -116,8 +98,7 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
-            template: "\n\t<div class=\"row\">\n\t  <div class=\"col-md-6\">\n\t    <base-chart class=\"chart\" \n\t                [datasets]=\"lineChartData\"\n\t                [labels]=\"lineChartLabels\"\n\t                [options]=\"lineChartOptions\"\n\t                [colors]=\"lineChartColours\"\n\t                [legend]=\"lineChartLegend\"\n\t                [chartType]=\"lineChartType\"\n\t                (chartHover)=\"chartHovered($event)\"\n\t                (chartClick)=\"chartClicked($event)\"></base-chart>\n\t  </div>\n\t  <div class=\"col-md-6\" style=\"margin-bottom: 10px;\">\n\t    <table class=\"table table-responsive table-condensed\">\n\t      <tr>\n\t        <th *ngFor=\"let label of lineChartLabels\">{{label}}</th>\n\t      </tr>\n\t      <tr *ngFor=\"let d of lineChartData\">\n\t        <td *ngFor=\"let label of lineChartLabels; let j=index\">{{d && d.data[j]}}</td>\n\t      </tr>\n\t    </table>\n\t    <button (click)=\"randomize()\">CLICK</button>\n\t  </div>\n\t</div>\n  ",
-            styles: ["\n\t.chart {display: block; width: 100%; border: 1px solid black;}\n  "],
+            template: linechart,
             directives: [ng2_charts_1.CHART_DIRECTIVES, common_1.NgClass, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, common_2.NgFor]
         }), 
         __metadata('design:paramtypes', [])
