@@ -65,6 +65,47 @@ var AppComponent = (function () {
         }
         this.lineChartData = _lineChartData;
     };
+    /*public updateCommits():void {
+      
+      var child;
+      /// <reference path="browser/ambient/node/index.d.ts" />
+      var exec = require('child_process').exec;
+  
+      exec("git log --pretty=format:\"%H\"", function(error, stdout, stderr) {
+        console.log("stdout: \n" + stdout);
+  
+        if (error) {
+          console.log('exec error: ' + error);
+        }
+  
+        var commitList = stdout.split("\n");
+        var result = "";
+  
+        async.eachSeries(commitList, function(commit, callback) {
+  
+          child = exec("git checkout " + commit, function(err, stdo, stde) {
+            child = exec("cloc $(git ls-files)", function(error, stdout, stderr) {
+  
+              if (error) {
+                console.log('exec error: ' + error);
+              }
+  
+              result = result + stdout;
+              callback();
+            });
+          });
+        },
+        function(err) {
+          exec("git checkout master");
+          if (error) {
+            console.log("Error");
+          }
+          else {
+            console.log(result);
+          }
+        });
+      });
+    }*/
     // events
     AppComponent.prototype.chartClicked = function (e) {
         console.log(e);
