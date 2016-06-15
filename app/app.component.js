@@ -26,32 +26,7 @@ var AppComponent = (function () {
             animation: false,
             responsive: true
         };
-        this.lineChartColours = [
-            {
-                backgroundColor: 'rgba(148,159,177,0.1)',
-                borderColor: 'rgba(148,159,177,1)',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-            },
-            {
-                backgroundColor: 'rgba(77,83,96,0.1)',
-                borderColor: 'rgba(77,83,96,1)',
-                pointBackgroundColor: 'rgba(77,83,96,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(77,83,96,1)'
-            },
-            {
-                backgroundColor: 'rgba(148,159,177,0.1)',
-                borderColor: 'rgba(148,159,177,1)',
-                pointBackgroundColor: 'rgba(148,159,177,1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-            }
-        ];
+        this.lineChartColours = [];
         this.lineChartLegend = true;
         this.lineChartType = 'line';
         this.countLines();
@@ -81,7 +56,7 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.formatLineColor = function (colors) {
         return {
-            backgroundColor: this.rgba(colors, 0.1),
+            backgroundColor: this.rgba(colors, 0.05),
             borderColor: this.rgba(colors, 1),
             pointBackgroundColor: this.rgba(colors, 1),
             pointBorderColor: '#fff',
@@ -101,18 +76,23 @@ var AppComponent = (function () {
         var array = [];
         this.http.get("/countLines")
             .subscribe(function (data) {
-            var clocArray = (data._body).split("SPLITMARK");
-            if (clocArray.length > 1) {
-                clocArray.shift();
+            var tempArray = (data._body).split("SPLITMARK");
+            if (tempArray.length > 1) {
+                tempArray.shift();
             }
-            for (var x in clocArray) {
-                var jsonObj = JSON.parse(clocArray[x]);
+            var clocArray = new Array(tempArray.length / 2);
+            for (var i = 0; i < tempArray.length / 2; i = i + 1) {
+                clocArray[i] = { "stdout": tempArray[i * 2], "tag": tempArray[i * 2 + 1] };
+            }
+            for (var x = 0; x < clocArray.length; x++) {
+                var jsonObj = JSON.parse(clocArray[x].stdout);
                 var keyList = Object.keys(jsonObj);
                 for (var y in keyList) {
                     if (array.indexOf(keyList[y]) == -1) {
                         array.push(keyList[y]);
                     }
                 }
+                _this.lineChartLabels[x] = clocArray[x].tag;
             }
             if (array.indexOf("header") != -1) {
                 array.splice(array.indexOf("header"), 1);
@@ -126,12 +106,9 @@ var AppComponent = (function () {
                 for (var j = 0; j < clocArray.length; j++) {
                     _lineChartData[i].data[j] = _this.getRandomInt(1, 100);
                 }
-            }
-            for (var i = 0; i < array.length; i++) {
                 _this.lineChartColours[i] = _this.formatLineColor(_this.getRandomColor());
             }
             _this.lineChartData = _lineChartData;
-            _this.lineChartLabels = new Array(clocArray.length).fill("temp");
         }, function (err) { return console.error(err); }, function () { return console.log('Counting Lines Complete'); });
     };
     AppComponent = __decorate([

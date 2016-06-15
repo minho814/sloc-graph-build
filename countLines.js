@@ -31,7 +31,7 @@ module.exports = function(req, res){
 					}
 					stdout = stdout.replace(/ /g,'');
 					stdout = stdout.replace(/\n/g,'');
-					result = result + "SPLITMARK" + stdout;
+					result = result + "SPLITMARK" + stdout + "SPLITMARK" + tag;
 					count++;
 					callback();
 				});

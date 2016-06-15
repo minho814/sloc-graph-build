@@ -28,32 +28,7 @@ export class AppComponent {
     responsive: true
   };
 
-  public lineChartColours:Array<any> = [
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.1)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-    },
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.1)',
-      borderColor: 'rgba(77,83,96,1)',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
-    },
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.1)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-    }
-  ];
+  public lineChartColours:Array<any> = [];
 
   public lineChartLegend:boolean = true;
   public lineChartType:string = 'line';
@@ -88,7 +63,7 @@ export class AppComponent {
 
   public formatLineColor(colors) {
     return {
-      backgroundColor: this.rgba(colors, 0.1),
+      backgroundColor: this.rgba(colors, 0.05),
       borderColor: this.rgba(colors, 1),
       pointBackgroundColor: this.rgba(colors, 1),
       pointBorderColor: '#fff',
@@ -117,20 +92,27 @@ export class AppComponent {
       .subscribe(
         (data: any) => 
           { 
-            let clocArray:Array<any> = (data._body).split("SPLITMARK");
+            let tempArray:Array<any> = (data._body).split("SPLITMARK");
             
-            if (clocArray.length > 1) {
-              clocArray.shift();
+            if (tempArray.length > 1) {
+              tempArray.shift();
+            }
+            var clocArray: Array<any> = new Array(tempArray.length / 2);
+
+            for (let i = 0; i < tempArray.length / 2; i = i+1) {
+              clocArray[i] = { "stdout": tempArray[i*2], "tag": tempArray[i*2 + 1] };
             }
 
-            for (let x in clocArray) {
-              let jsonObj = JSON.parse(clocArray[x]);
+            for (let x = 0; x < clocArray.length; x++) {
+              let jsonObj = JSON.parse(clocArray[x].stdout);
               let keyList = Object.keys(jsonObj); 
               for(let y in keyList) {
                 if(array.indexOf(keyList[y]) == -1) {
                   array.push(keyList[y]);
                 }
               }
+
+              this.lineChartLabels[x] = clocArray[x].tag;
             }
             
             if (array.indexOf("header") != -1) {
@@ -141,17 +123,18 @@ export class AppComponent {
             } 
 
             let _lineChartData: Array<any> = new Array(array.length);
+
             for (let i = 0; i < array.length; i++) {
               _lineChartData[i] = { data: new Array(clocArray.length), label: array[i] };
               for (let j = 0; j < clocArray.length; j++) {
                 _lineChartData[i].data[j] = this.getRandomInt(1, 100);
               }
-            }
-            for (let i = 0; i < array.length; i++) {
               this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
             }
+
             this.lineChartData = _lineChartData;
-            this.lineChartLabels = new Array(clocArray.length).fill("temp");
+            
+
           },
 
         err => console.error(err),
