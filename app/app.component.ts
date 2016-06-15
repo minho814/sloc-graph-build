@@ -1,6 +1,8 @@
 import {Component} from '@angular/core';
+
 import {CORE_DIRECTIVES, FORM_DIRECTIVES, NgClass} from '@angular/common';
 import {NgFor} from '@angular/common';
+import {Http} from '@angular/http';
 
 import {CHART_DIRECTIVES} from 'ng2-charts/ng2-charts';
 
@@ -13,17 +15,21 @@ let linechart = require('templates/linechart');
 })
 
 export class AppComponent {
+
   // lineChart
-  public lineChartData:Array<any> = [
-    {data: [65, 59, 80, 81, 56, 55, 40], label: 'Java'},
-    {data: [28, 48, 40, 19, 86, 27, 90], label: 'Javascript'},
-    {data: [18, 48, 77, 9, 100, 27, 40], label: 'HTML'}
+  public lineChartData: Array<any> = [
+    { data: [65, 59, 80, 81, 56, 55, 40], label: 'Java' },
+    { data: [28, 48, 40, 19, 86, 27, 90], label: 'Javascript' },
+    { data: [18, 48, 77, 9, 100, 27, 40], label: 'HTML' }
   ];
+
   public lineChartLabels:Array<any> = ['v0.1', 'v0.2', 'v1.0', 'v1.1', 'v1.1.5', 'v1.2', 'v2.0'];
+
   public lineChartOptions:any = {
     animation: false,
     responsive: true
   };
+
   public lineChartColours:Array<any> = [
     { // grey
       backgroundColor: 'rgba(148,159,177,0.1)',
@@ -50,6 +56,7 @@ export class AppComponent {
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
     }
   ];
+
   public lineChartLegend:boolean = true;
   public lineChartType:string = 'line';
 
@@ -99,5 +106,50 @@ export class AppComponent {
 
   public chartHovered(e:any):void {
     console.log(e);
+  }
+
+  
+  constructor(public http: Http) {
+    this.countLines();
+  }
+
+  public countLines():void {
+    var array:Array<any> = [];
+    this.http.get("/countLines")
+      .subscribe(
+        (data: any) => 
+          { 
+            let clocArray:Array<any> = (data._body).split("SPLITMARK");
+            
+            if (clocArray.length > 1) {
+              clocArray.shift();
+            }
+
+            for (let x in clocArray) {
+              let jsonObj = JSON.parse(clocArray[x]);
+              let keyList = Object.keys(jsonObj);
+              
+              for(let y in keyList) {
+
+                if(array.indexOf(keyList[y]) == -1) {
+                  array.push(keyList[y]);
+                }
+
+              }
+            }
+            
+            if (array.indexOf("header") != -1) {
+              array.splice(array.indexOf("header"), 1);
+            } 
+            if (array.indexOf("SUM") != -1) {
+              array.splice(array.indexOf("SUM"), 1);
+            } 
+
+            console.log(array);
+          },
+
+        err => console.error(err),
+        () => console.log('Counting Lines Complete')
+      );
   }
 }

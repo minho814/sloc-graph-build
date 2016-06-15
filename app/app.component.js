@@ -11,10 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var common_1 = require('@angular/common');
 var common_2 = require('@angular/common');
+var http_1 = require('@angular/http');
 var ng2_charts_1 = require('ng2-charts/ng2-charts');
 var linechart = require('templates/linechart');
 var AppComponent = (function () {
-    function AppComponent() {
+    function AppComponent(http) {
+        this.http = http;
         // lineChart
         this.lineChartData = [
             { data: [65, 59, 80, 81, 56, 55, 40], label: 'Java' },
@@ -54,6 +56,7 @@ var AppComponent = (function () {
         ];
         this.lineChartLegend = true;
         this.lineChartType = 'line';
+        this.countLines();
     }
     AppComponent.prototype.randomize = function () {
         var _lineChartData = new Array(this.lineChartData.length);
@@ -95,13 +98,39 @@ var AppComponent = (function () {
     AppComponent.prototype.chartHovered = function (e) {
         console.log(e);
     };
+    AppComponent.prototype.countLines = function () {
+        var array = [];
+        this.http.get("/countLines")
+            .subscribe(function (data) {
+            var clocArray = (data._body).split("SPLITMARK");
+            if (clocArray.length > 1) {
+                clocArray.shift();
+            }
+            for (var x in clocArray) {
+                var jsonObj = JSON.parse(clocArray[x]);
+                var keyList = Object.keys(jsonObj);
+                for (var y in keyList) {
+                    if (array.indexOf(keyList[y]) == -1) {
+                        array.push(keyList[y]);
+                    }
+                }
+            }
+            if (array.indexOf("header") != -1) {
+                array.splice(array.indexOf("header"), 1);
+            }
+            if (array.indexOf("SUM") != -1) {
+                array.splice(array.indexOf("SUM"), 1);
+            }
+            console.log(array);
+        }, function (err) { return console.error(err); }, function () { return console.log('Counting Lines Complete'); });
+    };
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
             template: linechart,
             directives: [ng2_charts_1.CHART_DIRECTIVES, common_1.NgClass, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, common_2.NgFor]
         }), 
-        __metadata('design:paramtypes', [])
+        __metadata('design:paramtypes', [http_1.Http])
     ], AppComponent);
     return AppComponent;
 }());
