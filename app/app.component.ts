@@ -145,7 +145,11 @@ export class AppComponent {
               array.splice(array.indexOf("SUM"), 1);
             } 
 
-            console.log(array);
+            for (let i = 0; i < 3; i++) {
+              this.lineChartData[i].label = array[i];
+              this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
+            }
+            console.log(this.lineChartData);
           },
 
         err => console.error(err),

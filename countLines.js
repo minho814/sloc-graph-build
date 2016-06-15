@@ -9,7 +9,6 @@ module.exports = function(req, res){
 	var count = 0;
 
 	exec("git tag", function (error, stdout, stderr) {
-		console.log("stdout: \n" + stdout);
 
 		if (error) {
 			console.error('exec error: ' + error);

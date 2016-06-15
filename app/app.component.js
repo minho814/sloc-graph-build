@@ -99,6 +99,7 @@ var AppComponent = (function () {
         console.log(e);
     };
     AppComponent.prototype.countLines = function () {
+        var _this = this;
         var array = [];
         this.http.get("/countLines")
             .subscribe(function (data) {
@@ -121,7 +122,10 @@ var AppComponent = (function () {
             if (array.indexOf("SUM") != -1) {
                 array.splice(array.indexOf("SUM"), 1);
             }
-            console.log(array);
+            for (var i = 0; i < 3; i++) {
+                _this.lineChartData[i].label = array[i];
+                _this.lineChartColours[i] = _this.formatLineColor(_this.getRandomColor());
+            }
         }, function (err) { return console.error(err); }, function () { return console.log('Counting Lines Complete'); });
     };
     AppComponent = __decorate([
