@@ -18,12 +18,10 @@ export class AppComponent {
 
   // lineChart
   public lineChartData: Array<any> = [
-    { data: [65, 59, 80, 81, 56, 55, 40], label: 'Java' },
-    { data: [28, 48, 40, 19, 86, 27, 90], label: 'Javascript' },
-    { data: [18, 48, 77, 9, 100, 27, 40], label: 'HTML' }
+    { data: [], label: 'Loading...' },
   ];
 
-  public lineChartLabels:Array<any> = ['v0.1', 'v0.2', 'v1.0', 'v1.1', 'v1.1.5', 'v1.2', 'v2.0'];
+  public lineChartLabels:Array<any> = [''];
 
   public lineChartOptions:any = {
     animation: false,
@@ -127,14 +125,11 @@ export class AppComponent {
 
             for (let x in clocArray) {
               let jsonObj = JSON.parse(clocArray[x]);
-              let keyList = Object.keys(jsonObj);
-              
+              let keyList = Object.keys(jsonObj); 
               for(let y in keyList) {
-
                 if(array.indexOf(keyList[y]) == -1) {
                   array.push(keyList[y]);
                 }
-
               }
             }
             
@@ -145,11 +140,18 @@ export class AppComponent {
               array.splice(array.indexOf("SUM"), 1);
             } 
 
-            for (let i = 0; i < 3; i++) {
-              this.lineChartData[i].label = array[i];
+            let _lineChartData: Array<any> = new Array(array.length);
+            for (let i = 0; i < array.length; i++) {
+              _lineChartData[i] = { data: new Array(clocArray.length), label: array[i] };
+              for (let j = 0; j < clocArray.length; j++) {
+                _lineChartData[i].data[j] = this.getRandomInt(1, 100);
+              }
+            }
+            for (let i = 0; i < array.length; i++) {
               this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
             }
-            console.log(this.lineChartData);
+            this.lineChartData = _lineChartData;
+            this.lineChartLabels = new Array(clocArray.length).fill("temp");
           },
 
         err => console.error(err),

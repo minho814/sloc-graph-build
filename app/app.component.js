@@ -19,11 +19,9 @@ var AppComponent = (function () {
         this.http = http;
         // lineChart
         this.lineChartData = [
-            { data: [65, 59, 80, 81, 56, 55, 40], label: 'Java' },
-            { data: [28, 48, 40, 19, 86, 27, 90], label: 'Javascript' },
-            { data: [18, 48, 77, 9, 100, 27, 40], label: 'HTML' }
+            { data: [], label: 'Loading...' },
         ];
-        this.lineChartLabels = ['v0.1', 'v0.2', 'v1.0', 'v1.1', 'v1.1.5', 'v1.2', 'v2.0'];
+        this.lineChartLabels = [''];
         this.lineChartOptions = {
             animation: false,
             responsive: true
@@ -122,10 +120,18 @@ var AppComponent = (function () {
             if (array.indexOf("SUM") != -1) {
                 array.splice(array.indexOf("SUM"), 1);
             }
-            for (var i = 0; i < 3; i++) {
-                _this.lineChartData[i].label = array[i];
+            var _lineChartData = new Array(array.length);
+            for (var i = 0; i < array.length; i++) {
+                _lineChartData[i] = { data: new Array(clocArray.length), label: array[i] };
+                for (var j = 0; j < clocArray.length; j++) {
+                    _lineChartData[i].data[j] = _this.getRandomInt(1, 100);
+                }
+            }
+            for (var i = 0; i < array.length; i++) {
                 _this.lineChartColours[i] = _this.formatLineColor(_this.getRandomColor());
             }
+            _this.lineChartData = _lineChartData;
+            _this.lineChartLabels = new Array(clocArray.length).fill("temp");
         }, function (err) { return console.error(err); }, function () { return console.log('Counting Lines Complete'); });
     };
     AppComponent = __decorate([
