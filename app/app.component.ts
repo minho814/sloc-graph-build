@@ -27,8 +27,18 @@ export class AppComponent {
     animation: false,
     responsive: true,
     scales: {
+      xAxes: [{
+        scaleLabel: {
+          display: true,
+          labelString: 'Tags'
+        }
+      }],
       yAxes: [{
-        stacked: true
+        stacked: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'Source Lines of Code'
+        }
       }]
     }
   };
@@ -63,9 +73,9 @@ export class AppComponent {
 
   public formatLineColor(colors) {
     return {
-      backgroundColor: this.rgba(colors, 0.05),
-      borderColor: this.rgba(colors, 1),
-      pointBackgroundColor: this.rgba(colors, 1),
+      backgroundColor: this.rgba(colors, 1.0),
+      borderColor: this.rgba(colors, 0.2),
+      pointBackgroundColor: this.rgba(colors, 0.2),
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: this.rgba(colors, 0.8)
