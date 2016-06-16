@@ -7,7 +7,7 @@ var child;
 module.exports = function(req, res){
 
 	// Get the list of tags in the current git repo
-	exec("git tag", function (error, stdout, stderr) {
+	exec("cd ~/Desktop/eLectVoting/elect-voting/ && git tag", function (error, stdout, stderr) {
 
 		if (error) {
 			console.error('exec error: ' + error);
@@ -51,7 +51,7 @@ module.exports = function(req, res){
 		function(err) {
 
 			// Checkout the master branch and send back the result
-			child = exec("git checkout master", function(err, stdo, stde) {
+			child = exec("git checkout develop", function(err, stdo, stde) {
 				res.send(result);
 			});
 		});
