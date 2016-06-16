@@ -25,7 +25,12 @@ export class AppComponent {
 
   public lineChartOptions:any = {
     animation: false,
-    responsive: true
+    responsive: true,
+    scales: {
+      yAxes: [{
+        stacked: true
+      }]
+    }
   };
 
   public lineChartColours:Array<any> = [];
@@ -124,6 +129,8 @@ export class AppComponent {
             if (languageArray.indexOf("SUM") != -1) {
               languageArray.splice(languageArray.indexOf("SUM"), 1);
             } 
+
+            languageArray.sort();
 
             // Create new lineChartData
             let _lineChartData: Array<any> = new Array(languageArray.length);

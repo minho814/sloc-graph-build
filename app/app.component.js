@@ -24,7 +24,12 @@ var AppComponent = (function () {
         this.lineChartLabels = [''];
         this.lineChartOptions = {
             animation: false,
-            responsive: true
+            responsive: true,
+            scales: {
+                yAxes: [{
+                        stacked: true
+                    }]
+            }
         };
         this.lineChartColours = [];
         this.lineChartLegend = true;
@@ -101,6 +106,7 @@ var AppComponent = (function () {
             if (languageArray.indexOf("SUM") != -1) {
                 languageArray.splice(languageArray.indexOf("SUM"), 1);
             }
+            languageArray.sort();
             // Create new lineChartData
             var _lineChartData = new Array(languageArray.length);
             // Run through each language in languageArray
