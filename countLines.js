@@ -28,10 +28,10 @@ module.exports = function(req, res){
 		async.eachSeries(tagList, function (tag, callback) {
 
 			// git checkout each tag
-	    	exec("git checkout " + tag, function(err, stdo, stde) {
+	    	child = exec("git checkout " + tag, function(err, stdo, stde) {
 
 	    		// count lines of code in all the git tracked files
-				exec("cloc --json $(git ls-files)", function (error, stdout, stderr) {
+				child = exec("cloc --json $(git ls-files)", function (error, stdout, stderr) {
 					if (error) {
 						console.error('exec error: ' + error);
 					}

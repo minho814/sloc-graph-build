@@ -31,18 +31,12 @@ var AppComponent = (function () {
         this.lineChartType = 'line';
         this.countLines();
     }
-    AppComponent.prototype.randomize = function () {
-        var _lineChartData = new Array(this.lineChartData.length);
-        for (var i = 0; i < this.lineChartData.length; i++) {
-            _lineChartData[i] = { data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label };
-            for (var j = 0; j < this.lineChartData[i].data.length; j++) {
-                _lineChartData[i].data[j] = this.getRandomInt(1, 100);
-            }
-        }
+    AppComponent.prototype.randomizeColors = function () {
+        var _lineChartColours = new Array(this.lineChartColours.length);
         for (var i = 0; i < this.lineChartColours.length; i++) {
-            this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
+            _lineChartColours[i] = this.formatLineColor(this.getRandomColor());
         }
-        this.lineChartData = _lineChartData;
+        this.lineChartColours = _lineChartColours;
     };
     // ng2-charts functions
     AppComponent.prototype.rgba = function (colour, alpha) {
@@ -112,7 +106,12 @@ var AppComponent = (function () {
             for (var i = 0; i < array.length; i++) {
                 _lineChartData[i] = { data: new Array(clocArray.length), label: array[i] };
                 for (var j = 0; j < clocArray.length; j++) {
-                    _lineChartData[i].data[j] = _this.getRandomInt(1, 100);
+                    if (_lineChartData[i].label in clocArray[j].stdout) {
+                        _lineChartData[i].data[j] = (clocArray[j].stdout)[array[i]].code;
+                    }
+                    else {
+                        _lineChartData[i].data[j] = null;
+                    }
                 }
                 _this.lineChartColours[i] = _this.formatLineColor(_this.getRandomColor());
             }

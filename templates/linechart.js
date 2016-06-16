@@ -13,12 +13,14 @@ module.exports = `<div class="row">
 	  <div class="col-md-6" style="margin-bottom: 10px;">
 	    <table class="table table-responsive table-condensed">
 	      <tr>
+	      	<th></th>
 	        <th *ngFor="let label of lineChartLabels">{{label}}</th>
 	      </tr>
-	      <tr *ngFor="let d of lineChartData">
+	      <tr *ngFor="let d of lineChartData; let i=index">
+	      	<th>{{lineChartData[i].label}}</th>
 	        <td *ngFor="let label of lineChartLabels; let j=index">{{d && d.data[j]}}</td>
 	      </tr>
 	    </table>
-	    <button (click)="randomize()">CLICK</button>
+	    <button (click)="randomizeColors()">Randomize Colors!</button>
 	  </div>
 </div>`
