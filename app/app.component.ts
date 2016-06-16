@@ -173,4 +173,39 @@ export class AppComponent {
         () => console.log('Counting Lines Complete') // Callback
       );
   }
+  public radioSelection:string = "None";
+  public setRadioSelection(value):void {
+    this.radioSelection = value;
+    this.setPercentageValue();
+  }
+  public percentageValue:string = "No Percentage Change"
+  public setPercentageValue() {
+    let sum = 0;
+    let sum2 = 0;
+
+    for (let x in this.lineChartData) {
+      if (this.lineChartData[x].data[this.lineChartData[x].data.length - 1]) {
+        sum = sum + this.lineChartData[x].data[this.lineChartData[x].data.length - 1];
+      }
+    }
+
+    let index = -1;
+
+    for (let x = 0; x < this.lineChartLabels.length; x++) {
+      if(this.lineChartLabels[x] == this.radioSelection) {
+        index = x; 
+      }
+    }
+
+    for (let x in this.lineChartData) {
+      if (this.lineChartData[x].data[index]) {
+        sum2 = sum2 + this.lineChartData[x].data[index];
+      }
+    }
+
+    let result = ( (sum - sum2) / sum ) * 100; 
+
+    this.percentageValue = "Percent Change = " + (result.toFixed(2)) + "%";
+  }
+
 }

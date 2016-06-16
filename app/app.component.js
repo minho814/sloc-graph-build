@@ -44,6 +44,8 @@ var AppComponent = (function () {
         this.lineChartColours = [];
         this.lineChartLegend = true;
         this.lineChartType = 'line';
+        this.radioSelection = "None";
+        this.percentageValue = "No Percentage Change";
         this.countLines();
     }
     AppComponent.prototype.randomizeColors = function () {
@@ -140,6 +142,32 @@ var AppComponent = (function () {
         function () { return console.log('Counting Lines Complete'); } // Callback
          // Callback
         );
+    };
+    AppComponent.prototype.setRadioSelection = function (value) {
+        this.radioSelection = value;
+        this.setPercentageValue();
+    };
+    AppComponent.prototype.setPercentageValue = function () {
+        var sum = 0;
+        var sum2 = 0;
+        for (var x in this.lineChartData) {
+            if (this.lineChartData[x].data[this.lineChartData[x].data.length - 1]) {
+                sum = sum + this.lineChartData[x].data[this.lineChartData[x].data.length - 1];
+            }
+        }
+        var index = -1;
+        for (var x = 0; x < this.lineChartLabels.length; x++) {
+            if (this.lineChartLabels[x] == this.radioSelection) {
+                index = x;
+            }
+        }
+        for (var x in this.lineChartData) {
+            if (this.lineChartData[x].data[index]) {
+                sum2 = sum2 + this.lineChartData[x].data[index];
+            }
+        }
+        var result = ((sum - sum2) / sum) * 100;
+        this.percentageValue = "Percent Change = " + (result.toFixed(2)) + "%";
     };
     AppComponent = __decorate([
         core_1.Component({

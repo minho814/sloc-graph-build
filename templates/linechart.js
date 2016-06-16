@@ -23,4 +23,13 @@ module.exports = `<div class="row">
 	    </table>
 	    <button (click)="randomizeColors()">Randomize Colors!</button>
 	  </div>
+	  <div class="form-group">
+		  <label class="col-md-4 control-label" for="radios">{{percentageValue}}</label>
+		  <div class="col-md-4"> 
+		    <label class="radio-inline" *ngFor="let label of lineChartLabels" >
+		      <input type="radio" name="radios" value="{{label}}" (click)="setRadioSelection(label)">
+		      {{label}}
+		    </label>
+		  </div>
+		</div>
 </div>`
