@@ -82,7 +82,7 @@ export class AppComponent {
   }
 
   public countLines():void {
-    let array:Array<any> = [];
+    let languageArray:Array<any> = [];
 
     // Get the lines counted by countLines.js
     this.http.get("/countLines")
@@ -108,8 +108,8 @@ export class AppComponent {
               clocArray[x].stdout = JSON.parse(clocArray[x].stdout);
               let keyList = Object.keys(clocArray[x].stdout); 
               for(let y in keyList) {
-                if(array.indexOf(keyList[y]) == -1) {
-                  array.push(keyList[y]);
+                if(languageArray.indexOf(keyList[y]) == -1) {
+                  languageArray.push(keyList[y]);
                 }
               }
 
@@ -118,22 +118,27 @@ export class AppComponent {
             }
              
             // Remove any instance of "header" and "SUM"
-            if (array.indexOf("header") != -1) {
-              array.splice(array.indexOf("header"), 1);
+            if (languageArray.indexOf("header") != -1) {
+              languageArray.splice(languageArray.indexOf("header"), 1);
             } 
-            if (array.indexOf("SUM") != -1) {
-              array.splice(array.indexOf("SUM"), 1);
+            if (languageArray.indexOf("SUM") != -1) {
+              languageArray.splice(languageArray.indexOf("SUM"), 1);
             } 
 
             // Create new lineChartData
-            let _lineChartData: Array<any> = new Array(array.length);
+            let _lineChartData: Array<any> = new Array(languageArray.length);
 
-            for (let i = 0; i < array.length; i++) {
-              _lineChartData[i] = { data: new Array(clocArray.length), label: array[i] };
+            // Run through each language in languageArray
+            for (let i = 0; i < languageArray.length; i++) {
+
+              _lineChartData[i] = { data: new Array(clocArray.length), label: languageArray[i] };
+
+              // Run through each clocArray entry
               for (let j = 0; j < clocArray.length; j++) {
 
+                // If language exists in the clocArray entry, save it in chart
                 if (_lineChartData[i].label in clocArray[j].stdout) {
-                  _lineChartData[i].data[j] = (clocArray[j].stdout)[array[i]].code;
+                  _lineChartData[i].data[j] = (clocArray[j].stdout)[languageArray[i]].code;
                 } else {
                   _lineChartData[i].data[j] = null;
                 }

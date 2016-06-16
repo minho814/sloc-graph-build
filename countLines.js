@@ -51,8 +51,9 @@ module.exports = function(req, res){
 		function(err) {
 
 			// Checkout the master branch and send back the result
-			exec("git checkout master"); 
-			res.send(result);
+			child = exec("git checkout master", function(err, stdo, stde) {
+				res.send(result);
+			});
 		});
 	}
 }

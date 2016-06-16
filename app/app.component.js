@@ -67,7 +67,7 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.countLines = function () {
         var _this = this;
-        var array = [];
+        var languageArray = [];
         // Get the lines counted by countLines.js
         this.http.get("/countLines")
             .subscribe(function (data) {
@@ -87,27 +87,30 @@ var AppComponent = (function () {
                 clocArray[x].stdout = JSON.parse(clocArray[x].stdout);
                 var keyList = Object.keys(clocArray[x].stdout);
                 for (var y in keyList) {
-                    if (array.indexOf(keyList[y]) == -1) {
-                        array.push(keyList[y]);
+                    if (languageArray.indexOf(keyList[y]) == -1) {
+                        languageArray.push(keyList[y]);
                     }
                 }
                 // Meanwhile, get the tags from clocArray and set lineChartLabels accordingly
                 _this.lineChartLabels[x] = clocArray[x].tag;
             }
             // Remove any instance of "header" and "SUM"
-            if (array.indexOf("header") != -1) {
-                array.splice(array.indexOf("header"), 1);
+            if (languageArray.indexOf("header") != -1) {
+                languageArray.splice(languageArray.indexOf("header"), 1);
             }
-            if (array.indexOf("SUM") != -1) {
-                array.splice(array.indexOf("SUM"), 1);
+            if (languageArray.indexOf("SUM") != -1) {
+                languageArray.splice(languageArray.indexOf("SUM"), 1);
             }
             // Create new lineChartData
-            var _lineChartData = new Array(array.length);
-            for (var i = 0; i < array.length; i++) {
-                _lineChartData[i] = { data: new Array(clocArray.length), label: array[i] };
+            var _lineChartData = new Array(languageArray.length);
+            // Run through each language in languageArray
+            for (var i = 0; i < languageArray.length; i++) {
+                _lineChartData[i] = { data: new Array(clocArray.length), label: languageArray[i] };
+                // Run through each clocArray entry
                 for (var j = 0; j < clocArray.length; j++) {
+                    // If language exists in the clocArray entry, save it in chart
                     if (_lineChartData[i].label in clocArray[j].stdout) {
-                        _lineChartData[i].data[j] = (clocArray[j].stdout)[array[i]].code;
+                        _lineChartData[i].data[j] = (clocArray[j].stdout)[languageArray[i]].code;
                     }
                     else {
                         _lineChartData[i].data[j] = null;
