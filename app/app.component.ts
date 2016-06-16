@@ -87,34 +87,42 @@ export class AppComponent {
   }
 
   public countLines():void {
-    var array:Array<any> = [];
+    let array:Array<any> = [];
+
+    // Get the lines counted by countLines.js
     this.http.get("/countLines")
       .subscribe(
         (data: any) => 
           { 
+            // Save the return value in a temporary array
             let tempArray:Array<any> = (data._body).split("SPLITMARK");
             
+            // Remove first element (which is an empty string)
             if (tempArray.length > 1) {
               tempArray.shift();
             }
-            var clocArray: Array<any> = new Array(tempArray.length / 2);
 
+            // Create a new array of half the size and format the tempArray by stdout and tag
+            let clocArray: Array<any> = new Array(tempArray.length / 2);
             for (let i = 0; i < tempArray.length / 2; i = i+1) {
               clocArray[i] = { "stdout": tempArray[i*2], "tag": tempArray[i*2 + 1] };
             }
 
+            // Run through clocArray and parse each key in stdout, pushing unique ones to array
             for (let x = 0; x < clocArray.length; x++) {
-              let jsonObj = JSON.parse(clocArray[x].stdout);
-              let keyList = Object.keys(jsonObj); 
+              clocArray[x].stdout = JSON.parse(clocArray[x].stdout);
+              let keyList = Object.keys(clocArray[x].stdout); 
               for(let y in keyList) {
                 if(array.indexOf(keyList[y]) == -1) {
                   array.push(keyList[y]);
                 }
               }
 
+              // Meanwhile, get the tags from clocArray and set lineChartLabels accordingly
               this.lineChartLabels[x] = clocArray[x].tag;
             }
-            
+             
+            // Remove any instance of "header" and "SUM"
             if (array.indexOf("header") != -1) {
               array.splice(array.indexOf("header"), 1);
             } 
@@ -122,6 +130,7 @@ export class AppComponent {
               array.splice(array.indexOf("SUM"), 1);
             } 
 
+            // Create new lineChartData
             let _lineChartData: Array<any> = new Array(array.length);
 
             for (let i = 0; i < array.length; i++) {
@@ -132,13 +141,13 @@ export class AppComponent {
               this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
             }
 
+            // Update the line chart on the page
             this.lineChartData = _lineChartData;
             
-
           },
 
-        err => console.error(err),
-        () => console.log('Counting Lines Complete')
+        err => console.error(err), // on error
+        () => console.log('Counting Lines Complete') // Callback
       );
   }
 }
