@@ -110,13 +110,22 @@ export class AppComponent {
             // Remove first element (which is an empty string)
             if (tempArray.length > 1) {
               tempArray.shift();
+            } else {
+              console.log("Nothing returned from countLines");
+              return;
             }
 
             // Create a new array of half the size and format the tempArray by stdout and tag
             let clocArray: Array<any> = new Array(tempArray.length / 2);
             for (let i = 0; i < tempArray.length / 2; i = i+1) {
-              clocArray[i] = { "stdout": tempArray[i*2], "tag": tempArray[i*2 + 1] };
+              if (tempArray[i * 2] == "") {
+                clocArray[i] = { "stdout": "{}", "tag": tempArray[i * 2 + 1] };
+              } else {
+                clocArray[i] = { "stdout": tempArray[i * 2], "tag": tempArray[i * 2 + 1] };
+              }
             }
+
+
 
             // Run through clocArray and parse each key in stdout, pushing unique ones to array
             for (let x = 0; x < clocArray.length; x++) {
@@ -157,7 +166,7 @@ export class AppComponent {
                 if (_lineChartData[i].label in clocArray[j].stdout) {
                   _lineChartData[i].data[j] = (clocArray[j].stdout)[languageArray[i]].code;
                 } else {
-                  _lineChartData[i].data[j] = null;
+                  _lineChartData[i].data[j] = 0;
                 }
               }
 

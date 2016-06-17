@@ -3,24 +3,42 @@ var async = require('async');
 
 var exec = require('child_process').exec;
 var child;
+var mainBranch = "";
 
 module.exports = function(req, res){
 
-	// Get the list of tags in the current git repo
-	exec("cd ~/Desktop/eLectVoting/elect-voting/ && git tag", function (error, stdout, stderr) {
+	var dir = "/Users/mhbae/Desktop/automated-versioning-tool/"
+	var git = "git --git-dir " + dir + ".git";
 
+	exec(git + " branch | grep \"* \" | tail -c+3", function(error, stdout, stderr) {
 		if (error) {
-			console.error('exec error: ' + error);
+			console.error('git branch error: ' + error);
 		}
-		
-		// Parse the result into an array
-		var tagList = stdout.split("\n");
-	    tagList.pop();
-		var result = [];
 
-		// Now use cloc with the list of tags
-		getClocResult(tagList, result);
+		mainBranch = stdout;
+		getTagList();
 	});
+	
+
+	// Get the list of tags in the current git repo
+	function getTagList() {
+		exec(git + " tag", function (error, stdout, stderr) {
+
+			if (error) {
+				console.error('git tag error: ' + error);
+			}
+			
+			// Parse the result into an array
+			var tagList = stdout.split("\n");
+		    tagList.pop();
+			var result = [];
+
+			// Now use cloc with the list of tags
+			getClocResult(tagList, result);
+		});
+	}
+
+
 
 	function getClocResult(tagList, result) {
 
@@ -28,12 +46,12 @@ module.exports = function(req, res){
 		async.eachSeries(tagList, function (tag, callback) {
 
 			// git checkout each tag
-	    	child = exec("git checkout " + tag, function(err, stdo, stde) {
+	    	child = exec(git + " checkout " + tag, function(err, stdo, stde) {
 
 	    		// count lines of code in all the git tracked files
-				child = exec("cloc --json $(git ls-files)", function (error, stdout, stderr) {
+				child = exec("cloc --json $("+ git + " ls-files)", function (error, stdout, stderr) {
 					if (error) {
-						console.error('exec error: ' + error);
+						console.error('cloc error: ' + error);
 					}
 
 					// Delete all whitespace an new lines
@@ -51,7 +69,10 @@ module.exports = function(req, res){
 		function(err) {
 
 			// Checkout the master branch and send back the result
-			child = exec("git checkout develop", function(err, stdo, stde) {
+			child = exec(git + " checkout " + mainBranch, function(error, stdout, stderr) {
+				if (error) {
+					console.error('return checkout error: ' + error);
+				}
 				res.send(result);
 			});
 		});

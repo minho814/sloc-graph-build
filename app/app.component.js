@@ -94,10 +94,19 @@ var AppComponent = (function () {
             if (tempArray.length > 1) {
                 tempArray.shift();
             }
+            else {
+                console.log("Nothing returned from countLines");
+                return;
+            }
             // Create a new array of half the size and format the tempArray by stdout and tag
             var clocArray = new Array(tempArray.length / 2);
             for (var i = 0; i < tempArray.length / 2; i = i + 1) {
-                clocArray[i] = { "stdout": tempArray[i * 2], "tag": tempArray[i * 2 + 1] };
+                if (tempArray[i * 2] == "") {
+                    clocArray[i] = { "stdout": "{}", "tag": tempArray[i * 2 + 1] };
+                }
+                else {
+                    clocArray[i] = { "stdout": tempArray[i * 2], "tag": tempArray[i * 2 + 1] };
+                }
             }
             // Run through clocArray and parse each key in stdout, pushing unique ones to array
             for (var x = 0; x < clocArray.length; x++) {
@@ -131,7 +140,7 @@ var AppComponent = (function () {
                         _lineChartData[i].data[j] = (clocArray[j].stdout)[languageArray[i]].code;
                     }
                     else {
-                        _lineChartData[i].data[j] = null;
+                        _lineChartData[i].data[j] = 0;
                     }
                 }
                 _this.lineChartColours[i] = _this.formatLineColor(_this.getRandomColor());
