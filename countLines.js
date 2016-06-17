@@ -8,7 +8,7 @@ var moment = require('moment');
 
 module.exports = function(req, res){
 
-	var dir = "/Users/mhbae/Desktop/eLectVoting/elect-voting";
+	var dir = ".";
 	var logTags = "log --tags --simplify-by-decoration --pretty=\"format:%ci %d\" | grep \"tag:\" | sed 's/^\\(.\\{19\\}\\).*tag:\\(.*,\\).*/\\1\\2/' | sed 's/^\\(.\\{19\\}\\).*tag:\\(.*)\\).*/\\1\\2/' | sed 's/.$//'";
 	var result = [];
 	var mainBranch = "";
