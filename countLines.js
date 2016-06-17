@@ -3,14 +3,17 @@ var async = require('async');
 
 var exec = require('child_process').exec;
 var child;
-var mainBranch = "";
+
+var moment = require('moment');
 
 module.exports = function(req, res){
 
-	var dir = "/Users/mhbae/Desktop/automated-versioning-tool/"
-	var git = "git --git-dir " + dir + ".git";
+	var dir = "/Users/mhbae/Desktop/eLectVoting/elect-voting";
+	var logTags = "log --tags --simplify-by-decoration --pretty=\"format:%ci %d\" | grep \"tag:\" | sed 's/^\\(.\\{19\\}\\).*tag:\\(.*,\\).*/\\1\\2/' | sed 's/^\\(.\\{19\\}\\).*tag:\\(.*)\\).*/\\1\\2/' | sed 's/.$//'";
+	var result = [];
+	var mainBranch = "";
 
-	exec(git + " branch | grep \"* \" | tail -c+3", function(error, stdout, stderr) {
+	exec("cd " + dir + " && git branch | grep \"* \" | tail -c+3", function(error, stdout, stderr) {
 		if (error) {
 			console.error('git branch error: ' + error);
 		}
@@ -22,34 +25,51 @@ module.exports = function(req, res){
 
 	// Get the list of tags in the current git repo
 	function getTagList() {
-		exec(git + " tag", function (error, stdout, stderr) {
+		exec("cd " + dir + " && git " + logTags, function (error, stdout, stderr) {
 
 			if (error) {
 				console.error('git tag error: ' + error);
 			}
-			
+
 			// Parse the result into an array
-			var tagList = stdout.split("\n");
-		    tagList.pop();
-			var result = [];
+			var tempTagList = stdout.split("\n");
+			tempTagList.pop();
+			var tagList = [];
+
+			var startDate = moment('0000-01-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
+
+			for (var i = tempTagList.length - 1; i >= 0; i--) {
+				var endDate = moment(tempTagList[i], 'YYYY-MM-DD HH:mm:ss');
+				var daysDiff = endDate.diff(startDate, 'days');
+				if (daysDiff >= 7) {
+					startDate = endDate;
+					var tagName = tempTagList[i].substring(20);
+
+					if (tagName == "-") {
+						tagName = mainBranch;
+					}
+
+					tagList.push(tagName);
+				}
+			}
 
 			// Now use cloc with the list of tags
-			getClocResult(tagList, result);
+			getClocResult(tagList);
 		});
 	}
 
 
 
-	function getClocResult(tagList, result) {
+	function getClocResult(tagList) {
 
 		// Run through each tag given synchronously 
 		async.eachSeries(tagList, function (tag, callback) {
 
 			// git checkout each tag
-	    	child = exec(git + " checkout " + tag, function(err, stdo, stde) {
-
+	    	child = exec("cd " + dir + " && git checkout " + tag, function(err, stdo, stde) {
+	    
 	    		// count lines of code in all the git tracked files
-				child = exec("cloc --json $("+ git + " ls-files)", function (error, stdout, stderr) {
+				child = exec("cd " + dir + " && cloc --json $(git ls-files)", function (error, stdout, stderr) {
 					if (error) {
 						console.error('cloc error: ' + error);
 					}
@@ -69,7 +89,7 @@ module.exports = function(req, res){
 		function(err) {
 
 			// Checkout the master branch and send back the result
-			child = exec(git + " checkout " + mainBranch, function(error, stdout, stderr) {
+			child = exec("cd " + dir + " && git checkout " + mainBranch, function(error, stdout, stderr) {
 				if (error) {
 					console.error('return checkout error: ' + error);
 				}

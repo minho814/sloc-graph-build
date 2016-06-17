@@ -175,7 +175,6 @@ export class AppComponent {
 
             // Update the line chart on the page
             this.lineChartData = _lineChartData;
-            
           },
 
         err => console.error(err), // on error

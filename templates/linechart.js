@@ -1,5 +1,5 @@
 module.exports = `<div class="row">
-	  <div class="col-md-6">
+	  <div class="col-md-10">
 	    <base-chart class="chart" 
 	                [datasets]="lineChartData"
 	                [labels]="lineChartLabels"
@@ -10,7 +10,7 @@ module.exports = `<div class="row">
 	                (chartHover)="chartHovered($event)"
 	                (chartClick)="chartClicked($event)"></base-chart>
 	  </div>
-	  <div class="col-md-6" style="margin-bottom: 10px;">
+	  <div class="col-md-12" style="margin-bottom: 10px;">
 	    <table class="table table-responsive table-condensed">
 	      <tr>
 	      	<th></th>
@@ -24,12 +24,12 @@ module.exports = `<div class="row">
 	    <button (click)="randomizeColors()">Randomize Colors!</button>
 	  </div>
 	  <div class="form-group">
-		  <label class="col-md-4 control-label" for="radios">{{percentageValue}}</label>
-		  <div class="col-md-4"> 
-		    <label class="radio-inline" *ngFor="let label of lineChartLabels" >
-		      <input type="radio" name="radios" value="{{label}}" (click)="setRadioSelection(label)">
-		      {{label}}
-		    </label>
-		  </div>
-		</div>
+	    <div class="col-md-4"> 
+	      <label class="col-md-4 control-label" for="radios">{{percentageValue}}</label>
+	      <label class="radio-inline" *ngFor="let label of lineChartLabels" >
+	    		<input type="radio" name="radios" value="{{label}}" (click)="setRadioSelection(label)">
+	      		{{label}}
+	  		</label>
+			</div>
+    </div>
 </div>`
