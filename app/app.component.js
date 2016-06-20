@@ -212,7 +212,8 @@ var AppComponent = (function () {
         core_1.Component({
             selector: 'my-app',
             template: linechart,
-            directives: [ng2_charts_1.CHART_DIRECTIVES, common_1.NgClass, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, common_2.NgFor, common_2.NgIf]
+            directives: [ng2_charts_1.CHART_DIRECTIVES, common_1.NgClass, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, common_2.NgFor, common_2.NgIf],
+            styles: ["\n  .wrapper{\n      width: 90%;\n      overflow-x:scroll;\n    }\n  .center {\n    margin: auto;\n    padding: 10px;\n  } \n  "]
         }), 
         __metadata('design:paramtypes', [http_1.Http])
     ], AppComponent);

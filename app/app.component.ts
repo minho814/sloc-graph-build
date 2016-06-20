@@ -11,7 +11,17 @@ let linechart = require('templates/linechart');
 @Component({
   selector: 'my-app',
   template: linechart,
-  directives: [CHART_DIRECTIVES, NgClass, CORE_DIRECTIVES, FORM_DIRECTIVES, NgFor, NgIf]
+  directives: [CHART_DIRECTIVES, NgClass, CORE_DIRECTIVES, FORM_DIRECTIVES, NgFor, NgIf],
+  styles: [`
+  .wrapper{
+      width: 90%;
+      overflow-x:scroll;
+    }
+  .center {
+    margin: auto;
+    padding: 10px;
+  } 
+  `]
 })
 
 export class AppComponent {
