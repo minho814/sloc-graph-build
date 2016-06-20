@@ -44,9 +44,11 @@ var AppComponent = (function () {
         this.lineChartColours = [];
         this.lineChartLegend = true;
         this.lineChartType = 'line';
+        this.chartCreated = false;
+        this.linesCounted = false;
         this.radioSelection = "None";
         this.percentageValue = "No Percentage Change";
-        this.countLines();
+        //this.countLines();
     }
     AppComponent.prototype.randomizeColors = function () {
         var _lineChartColours = new Array(this.lineChartColours.length);
@@ -82,9 +84,42 @@ var AppComponent = (function () {
     AppComponent.prototype.chartHovered = function (e) {
         console.log(e);
     };
+    AppComponent.prototype.updateChart = function () {
+        if (this.linesCounted) {
+            var languageArray = this.languageList.split(", ");
+            for (var x = 0; x < this.clocArray.length; x++) {
+                // Meanwhile, get the tags from clocArray and set lineChartLabels accordingly
+                this.lineChartLabels[x] = this.clocArray[x].tag;
+                languageArray.sort();
+                // Create new lineChartData
+                var _lineChartData = new Array(languageArray.length);
+                // Run through each language in languageArray
+                for (var i = 0; i < languageArray.length; i++) {
+                    _lineChartData[i] = { data: new Array(this.clocArray.length), label: languageArray[i] };
+                    // Run through each clocArray entry
+                    for (var j = 0; j < this.clocArray.length; j++) {
+                        // If language exists in the clocArray entry, save it in chart
+                        if (_lineChartData[i].label in this.clocArray[j].stdout) {
+                            _lineChartData[i].data[j] = (this.clocArray[j].stdout)[languageArray[i]].code;
+                        }
+                        else {
+                            _lineChartData[i].data[j] = 0;
+                        }
+                    }
+                    this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
+                }
+                // Update the line chart on the page
+                this.lineChartData = _lineChartData;
+            }
+        }
+        else {
+            this.countLines();
+        }
+    };
     AppComponent.prototype.countLines = function () {
         var _this = this;
-        var languageArray = [];
+        this.chartCreated = true;
+        var languageArray = this.languageList.split(", ");
         // Get the lines counted by countLines.js
         this.http.get("/countLines")
             .subscribe(function (data) {
@@ -99,26 +134,20 @@ var AppComponent = (function () {
                 return;
             }
             // Create a new array of half the size and format the tempArray by stdout and tag
-            var clocArray = new Array(tempArray.length / 2);
+            _this.clocArray = new Array(tempArray.length / 2);
             for (var i = 0; i < tempArray.length / 2; i = i + 1) {
                 if (tempArray[i * 2] == "") {
-                    clocArray[i] = { "stdout": "{}", "tag": tempArray[i * 2 + 1] };
+                    _this.clocArray[i] = { "stdout": "{}", "tag": tempArray[i * 2 + 1] };
                 }
                 else {
-                    clocArray[i] = { "stdout": tempArray[i * 2], "tag": tempArray[i * 2 + 1] };
+                    _this.clocArray[i] = { "stdout": tempArray[i * 2], "tag": tempArray[i * 2 + 1] };
                 }
             }
             // Run through clocArray and parse each key in stdout, pushing unique ones to array
-            for (var x = 0; x < clocArray.length; x++) {
-                clocArray[x].stdout = JSON.parse(clocArray[x].stdout);
-                var keyList = Object.keys(clocArray[x].stdout);
-                for (var y in keyList) {
-                    if (languageArray.indexOf(keyList[y]) == -1) {
-                        languageArray.push(keyList[y]);
-                    }
-                }
+            for (var x = 0; x < _this.clocArray.length; x++) {
+                _this.clocArray[x].stdout = JSON.parse(_this.clocArray[x].stdout);
                 // Meanwhile, get the tags from clocArray and set lineChartLabels accordingly
-                _this.lineChartLabels[x] = clocArray[x].tag;
+                _this.lineChartLabels[x] = _this.clocArray[x].tag;
             }
             // Remove any instance of "header" and "SUM"
             if (languageArray.indexOf("header") != -1) {
@@ -132,12 +161,12 @@ var AppComponent = (function () {
             var _lineChartData = new Array(languageArray.length);
             // Run through each language in languageArray
             for (var i = 0; i < languageArray.length; i++) {
-                _lineChartData[i] = { data: new Array(clocArray.length), label: languageArray[i] };
+                _lineChartData[i] = { data: new Array(_this.clocArray.length), label: languageArray[i] };
                 // Run through each clocArray entry
-                for (var j = 0; j < clocArray.length; j++) {
+                for (var j = 0; j < _this.clocArray.length; j++) {
                     // If language exists in the clocArray entry, save it in chart
-                    if (_lineChartData[i].label in clocArray[j].stdout) {
-                        _lineChartData[i].data[j] = (clocArray[j].stdout)[languageArray[i]].code;
+                    if (_lineChartData[i].label in _this.clocArray[j].stdout) {
+                        _lineChartData[i].data[j] = (_this.clocArray[j].stdout)[languageArray[i]].code;
                     }
                     else {
                         _lineChartData[i].data[j] = 0;
@@ -147,6 +176,7 @@ var AppComponent = (function () {
             }
             // Update the line chart on the page
             _this.lineChartData = _lineChartData;
+            _this.linesCounted = true;
         }, function (err) { return console.error(err); }, // on error
         function () { return console.log('Counting Lines Complete'); } // Callback
          // Callback
@@ -182,7 +212,7 @@ var AppComponent = (function () {
         core_1.Component({
             selector: 'my-app',
             template: linechart,
-            directives: [ng2_charts_1.CHART_DIRECTIVES, common_1.NgClass, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, common_2.NgFor]
+            directives: [ng2_charts_1.CHART_DIRECTIVES, common_1.NgClass, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, common_2.NgFor, common_2.NgIf]
         }), 
         __metadata('design:paramtypes', [http_1.Http])
     ], AppComponent);

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 import {CORE_DIRECTIVES, FORM_DIRECTIVES, NgClass} from '@angular/common';
-import {NgFor} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
 import {Http} from '@angular/http';
 
 import {CHART_DIRECTIVES} from 'ng2-charts/ng2-charts';
@@ -11,7 +11,7 @@ let linechart = require('templates/linechart');
 @Component({
   selector: 'my-app',
   template: linechart,
-  directives: [CHART_DIRECTIVES, NgClass, CORE_DIRECTIVES, FORM_DIRECTIVES, NgFor]
+  directives: [CHART_DIRECTIVES, NgClass, CORE_DIRECTIVES, FORM_DIRECTIVES, NgFor, NgIf]
 })
 
 export class AppComponent {
@@ -90,14 +90,63 @@ export class AppComponent {
   public chartHovered(e:any):void {
     console.log(e);
   }
-
   
   constructor(public http: Http) {
-    this.countLines();
+    //this.countLines();
+  }
+
+  public languageList;
+  public clocArray;
+
+  public chartCreated: boolean = false;
+  public linesCounted: boolean = false;
+
+  public updateChart():void {
+    if(this.linesCounted) {
+      let languageArray: Array<any> = this.languageList.split(", ");
+
+      for (let x = 0; x < this.clocArray.length; x++) {
+
+        // Meanwhile, get the tags from clocArray and set lineChartLabels accordingly
+        this.lineChartLabels[x] = this.clocArray[x].tag;
+
+        languageArray.sort();
+
+        // Create new lineChartData
+        let _lineChartData: Array<any> = new Array(languageArray.length);
+
+        // Run through each language in languageArray
+        for (let i = 0; i < languageArray.length; i++) {
+
+          _lineChartData[i] = { data: new Array(this.clocArray.length), label: languageArray[i] };
+
+          // Run through each clocArray entry
+          for (let j = 0; j < this.clocArray.length; j++) {
+
+            // If language exists in the clocArray entry, save it in chart
+            if (_lineChartData[i].label in this.clocArray[j].stdout) {
+              _lineChartData[i].data[j] = (this.clocArray[j].stdout)[languageArray[i]].code;
+            } else {
+              _lineChartData[i].data[j] = 0;
+            }
+          }
+
+          this.lineChartColours[i] = this.formatLineColor(this.getRandomColor());
+        }
+
+        // Update the line chart on the page
+        this.lineChartData = _lineChartData;
+      }
+
+    } else {
+      this.countLines();
+    }
   }
 
   public countLines():void {
-    let languageArray:Array<any> = [];
+    this.chartCreated = true;
+
+    let languageArray: Array<any> = this.languageList.split(", ");
 
     // Get the lines counted by countLines.js
     this.http.get("/countLines")
@@ -116,29 +165,21 @@ export class AppComponent {
             }
 
             // Create a new array of half the size and format the tempArray by stdout and tag
-            let clocArray: Array<any> = new Array(tempArray.length / 2);
+            this.clocArray = new Array(tempArray.length / 2);
             for (let i = 0; i < tempArray.length / 2; i = i+1) {
               if (tempArray[i * 2] == "") {
-                clocArray[i] = { "stdout": "{}", "tag": tempArray[i * 2 + 1] };
+                this.clocArray[i] = { "stdout": "{}", "tag": tempArray[i * 2 + 1] };
               } else {
-                clocArray[i] = { "stdout": tempArray[i * 2], "tag": tempArray[i * 2 + 1] };
+                this.clocArray[i] = { "stdout": tempArray[i * 2], "tag": tempArray[i * 2 + 1] };
               }
             }
 
-
-
             // Run through clocArray and parse each key in stdout, pushing unique ones to array
-            for (let x = 0; x < clocArray.length; x++) {
-              clocArray[x].stdout = JSON.parse(clocArray[x].stdout);
-              let keyList = Object.keys(clocArray[x].stdout); 
-              for(let y in keyList) {
-                if(languageArray.indexOf(keyList[y]) == -1) {
-                  languageArray.push(keyList[y]);
-                }
-              }
-
+            for (let x = 0; x < this.clocArray.length; x++) {
+              this.clocArray[x].stdout = JSON.parse(this.clocArray[x].stdout);
+              
               // Meanwhile, get the tags from clocArray and set lineChartLabels accordingly
-              this.lineChartLabels[x] = clocArray[x].tag;
+              this.lineChartLabels[x] = this.clocArray[x].tag;
             }
              
             // Remove any instance of "header" and "SUM"
@@ -157,14 +198,14 @@ export class AppComponent {
             // Run through each language in languageArray
             for (let i = 0; i < languageArray.length; i++) {
 
-              _lineChartData[i] = { data: new Array(clocArray.length), label: languageArray[i] };
+              _lineChartData[i] = { data: new Array(this.clocArray.length), label: languageArray[i] };
 
               // Run through each clocArray entry
-              for (let j = 0; j < clocArray.length; j++) {
+              for (let j = 0; j < this.clocArray.length; j++) {
 
                 // If language exists in the clocArray entry, save it in chart
-                if (_lineChartData[i].label in clocArray[j].stdout) {
-                  _lineChartData[i].data[j] = (clocArray[j].stdout)[languageArray[i]].code;
+                if (_lineChartData[i].label in this.clocArray[j].stdout) {
+                  _lineChartData[i].data[j] = (this.clocArray[j].stdout)[languageArray[i]].code;
                 } else {
                   _lineChartData[i].data[j] = 0;
                 }
@@ -175,6 +216,7 @@ export class AppComponent {
 
             // Update the line chart on the page
             this.lineChartData = _lineChartData;
+            this.linesCounted = true;
           },
 
         err => console.error(err), // on error
