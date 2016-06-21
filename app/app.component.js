@@ -13,6 +13,7 @@ var common_1 = require('@angular/common');
 var common_2 = require('@angular/common');
 var http_1 = require('@angular/http');
 var ng2_charts_1 = require('ng2-charts/ng2-charts');
+var ng2_bootstrap_1 = require('ng2-bootstrap/ng2-bootstrap');
 var linechart = require('templates/linechart');
 var AppComponent = (function () {
     function AppComponent(http) {
@@ -184,9 +185,9 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.setRadioSelection = function (value) {
         this.radioSelection = value;
-        this.setPercentageValue();
     };
-    AppComponent.prototype.setPercentageValue = function () {
+    AppComponent.prototype.setPercentageValue = function (value) {
+        this.setRadioSelection(value);
         var sum = 0;
         var sum2 = 0;
         for (var x in this.lineChartData) {
@@ -212,8 +213,8 @@ var AppComponent = (function () {
         core_1.Component({
             selector: 'my-app',
             template: linechart,
-            directives: [ng2_charts_1.CHART_DIRECTIVES, common_1.NgClass, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, common_2.NgFor, common_2.NgIf],
-            styles: ["\n  .wrapper{\n      width: 90%;\n      overflow-x:scroll;\n    }\n  .center {\n    margin: auto;\n    padding: 10px;\n  } \n  "]
+            directives: [ng2_charts_1.CHART_DIRECTIVES, common_1.NgClass, common_1.CORE_DIRECTIVES, common_1.FORM_DIRECTIVES, common_2.NgFor, common_2.NgIf, ng2_bootstrap_1.TAB_DIRECTIVES, ng2_bootstrap_1.BUTTON_DIRECTIVES],
+            styles: ["\n  .wrapper {\n      overflow-x:scroll;\n    }\n  .center {\n      width: 90%;\n      margin-left: auto ;\n      margin-right: auto ;\n    }\n  "]
         }), 
         __metadata('design:paramtypes', [http_1.Http])
     ], AppComponent);
