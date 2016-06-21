@@ -5,22 +5,23 @@ import {NgFor, NgIf} from '@angular/common';
 import {Http} from '@angular/http';
 
 import {CHART_DIRECTIVES} from 'ng2-charts/ng2-charts';
+import {TAB_DIRECTIVES, BUTTON_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 
 let linechart = require('templates/linechart');
 
 @Component({
   selector: 'my-app',
   template: linechart,
-  directives: [CHART_DIRECTIVES, NgClass, CORE_DIRECTIVES, FORM_DIRECTIVES, NgFor, NgIf],
+  directives: [CHART_DIRECTIVES, NgClass, CORE_DIRECTIVES, FORM_DIRECTIVES, NgFor, NgIf, TAB_DIRECTIVES, BUTTON_DIRECTIVES],
   styles: [`
-  .wrapper{
-      width: 90%;
+  .wrapper {
       overflow-x:scroll;
     }
   .center {
-    margin: auto;
-    padding: 10px;
-  } 
+      width: 90%;
+      margin-left: auto ;
+      margin-right: auto ;
+    }
   `]
 })
 
@@ -234,12 +235,15 @@ export class AppComponent {
       );
   }
   public radioSelection:string = "None";
+  
   public setRadioSelection(value):void {
     this.radioSelection = value;
-    this.setPercentageValue();
   }
+
   public percentageValue:string = "No Percentage Change"
-  public setPercentageValue() {
+  public setPercentageValue(value) {
+    this.setRadioSelection(value);
+
     let sum = 0;
     let sum2 = 0;
 
