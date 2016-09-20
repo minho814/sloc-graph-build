@@ -1,3 +1,6 @@
+# NOTE
+Has not been updated to final release of angular2.
+
 # Source Code Graph Builder
 
 This tool uses a git repository and builds a graph of its source lines of code
