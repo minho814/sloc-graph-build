@@ -1,5 +1,5 @@
 {
-  "name": "source-code-metrics",
+  "name": "sloc-graph-build",
   "version": "1.0.0",
   "scripts": {
     "start": "node app",
